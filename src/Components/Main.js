@@ -14,12 +14,6 @@ class Main extends React.Component {
     //     original: "https://www.lereacteur.io",
     //     hash: "akfa",
     //     visits: 42
-    //   },
-    //   {
-    //     _id: uid2(10),
-    //     original: "https://www.google.fr",
-    //     hash: "akhfea",
-    //     visits: 7
     //   }
     // ],
     message: false
@@ -102,6 +96,11 @@ class Main extends React.Component {
         links.unshift(newLink);
         this.setState({ input: "", links });
       } catch (e) {
+        //??????
+        //??????
+        //   ???? NE SEMBLE PAS MARCHER SI LE SERVEUR NE REPOND PAS
+        //????
+        //????
         this.setState({ message: e.response.data.message });
         console.log({ error: e.response.data.message });
       }
