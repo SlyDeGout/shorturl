@@ -75,10 +75,6 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
-button:active {
-  background-color: gray;
-  color: white;
-}
 
 input:focus,
 button:focus {

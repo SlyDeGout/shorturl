@@ -5,17 +5,10 @@ import server from "../config/server";
 class Redirect extends React.Component {
   render() {
     // NOTHING ON SCREEN WHILE
-    //return null;
+    return null;
 
     // OR SOME MESSAGE
-    return (
-      <div>
-        <div>
-          (Redirect this.props.location : {this.props.location.pathname})
-        </div>
-        <div>Redirecting ...</div>
-      </div>
-    );
+    //return <div>Redirecting ...</div>;
   }
 
   async componentDidMount() {
@@ -31,10 +24,10 @@ class Redirect extends React.Component {
         }
         //window.location.href = url;
         window.location.replace(url);
-        alert("redirecting to " + url);
-      } else {
-        alert("URL not valid");
-      }
+        //alert("redirecting to " + url);
+      } //else {
+      //alert("URL not valid");
+      //}
     } catch (e) {
       alert("error:" + e.message);
       console.log({ error: e.message });

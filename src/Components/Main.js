@@ -54,8 +54,8 @@ class Main extends React.Component {
   handleClick = async e => {
     e.preventDefault();
 
-    // clearTimeout(this.errTimeout);
-    // this.errTimeout = setTimeout(this.hideMessage, 3000);
+    clearTimeout(this.errTimeout);
+    this.errTimeout = setTimeout(this.hideMessage, 3000);
 
     // 1. Input validation
     if (!this.validURL(this.state.input)) {
@@ -63,9 +63,9 @@ class Main extends React.Component {
         message: "Unable to shorten that link. It is not a valid url."
       });
     } else {
-      this.setState({
-        message: "PERFECT URL."
-      });
+      // this.setState({
+      //   message: "PERFECT URL."
+      // });
       // 2. Hash and new link creation
       let url = this.state.input;
       // adding "http://" at the beginning of urls which doesn't have it and are are not ftps
@@ -87,9 +87,6 @@ class Main extends React.Component {
           hash: newLink.hash,
           visits: newLink.visits
         });
-
-        //console.log(response);
-
         newLink._id = response.data.id;
         // 4. Update of links state
         let links = [...this.state.links];
@@ -101,8 +98,14 @@ class Main extends React.Component {
         //   ???? NE SEMBLE PAS MARCHER SI LE SERVEUR NE REPOND PAS
         //????
         //????
-        this.setState({ message: e.response.data.message });
-        console.log({ error: e.response.data.message });
+        // if the server answer ?????
+        if (e.response) {
+          this.setState({ message: e.response.data.message });
+          //console.log({ error: e.response.data.message });
+        } else {
+          this.setState({ message: e.message });
+          //console.log({ error: e.message.message });
+        }
       }
     }
   };
@@ -122,7 +125,7 @@ class Main extends React.Component {
       this.setState({ links });
     } catch (e) {
       this.setState({ message: e.message });
-      console.log({ error: e.message });
+      //console.log({ error: e.message });
     }
   };
 
@@ -142,7 +145,7 @@ class Main extends React.Component {
             onClick={() => this.shorturlClick(link._id)}
             // rel="noopener noreferrer"
           >
-            {server + link.hash}
+            {"https://short-url-sylvain-laborderie.herokuapp.com/" + link.hash}
           </Link>
         </td>
         <td>{link.visits}</td>
