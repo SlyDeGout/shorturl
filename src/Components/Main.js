@@ -7,15 +7,8 @@ import server from "../config/server";
 class Main extends React.Component {
   state = {
     input: "http://www.google.fr",
+    // links format : { _id, original, hash, visits }
     links: [],
-    // links: [
-    //   {
-    //     _id: uid2(10),
-    //     original: "https://www.lereacteur.io",
-    //     hash: "akfa",
-    //     visits: 42
-    //   }
-    // ],
     message: false
   };
 
@@ -63,9 +56,6 @@ class Main extends React.Component {
         message: "Unable to shorten that link. It is not a valid url."
       });
     } else {
-      // this.setState({
-      //   message: "PERFECT URL."
-      // });
       // 2. Hash and new link creation
       let url = this.state.input;
       // adding "http://" at the beginning of urls which doesn't have it and are are not ftps
@@ -93,12 +83,7 @@ class Main extends React.Component {
         links.unshift(newLink);
         this.setState({ input: "", links });
       } catch (e) {
-        //??????
-        //??????
-        //   ???? NE SEMBLE PAS MARCHER SI LE SERVEUR NE REPOND PAS
-        //????
-        //????
-        // if the server answer ?????
+        // if the server answer
         if (e.response) {
           this.setState({ message: e.response.data.message });
           //console.log({ error: e.response.data.message });
@@ -156,7 +141,6 @@ class Main extends React.Component {
   render() {
     return (
       <>
-        <div>(Main location.pathname : {this.props.location.pathname})</div>
         <header>
           <div className="container header-content">
             <h1>Simplify your links</h1>
