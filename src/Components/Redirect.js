@@ -31,6 +31,23 @@ class Redirect extends React.Component {
             // url redirection
             window.location.replace(url);
           } else {
+            // ?????
+            // ?????
+
+            // ?????
+
+            // ?????
+
+            // ?????
+            // This case won't happen unless a database crash in a blink of an eye
+            // ?????
+            // ?????
+
+            // ?????
+
+            // ?????
+
+            // ?????
             alert("This short url doesn't exist anymore in database ...");
           }
         } catch (e) {
