@@ -3,11 +3,16 @@ import { Link } from "react-router-dom";
 import uid2 from "uid2";
 import axios from "axios";
 import server from "../config/server";
+import validator from "validator";
+//
+// Possible improvement note for a further version :
+// the validator used here doesn't check extensions, so maybe check if extension exists ?
+//
 
 class Main extends React.Component {
   state = {
     input: "http://www.google.fr",
-    // links format : { _id, original, hash, visits }
+    // here is the link format used : { _id, original, hash, visits }
     links: [],
     message: false
   };
@@ -19,46 +24,33 @@ class Main extends React.Component {
     this.setState({ input: e.target.value });
   };
 
+  // setting timeout for the message shown to the user
+  timedMessage = message => {
+    this.setState({ message });
+    this.errTimeout = setTimeout(this.hideMessage, 3000);
+  };
+
   // to hide the message shown to the user
   hideMessage = () => {
     this.setState({ message: false });
   };
 
-  // return true if url is valid
-  validURL = url => {
-    if (url.indexOf(".") === -1) return false;
-    let pattern = new RegExp(
-      "^(http:\\/\\/www.|https:\\/\\/www.|http:\\/\\/|https:\\/\\/|ftp:\\/\\/)?" + // protocol
-      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // ip (v4) address
-      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + //port
-      "(\\?[;&amp;a-z\\d%_.~+=-]*)?" + // query string
-        "(\\#[-a-z\\d_]*)?$",
-      "i"
-    );
-    // pattern = new RegExp(
-    //   "^(?: (https | http | ftp) ?: //)?[w.-](?:.[w.-]+)[w-._~:/?#[]@!$&'()*+,;=.]$",
-    //   "i"
-    // );
-    return pattern.test(url);
-  };
-
   // handle the "shorten url" button click
-  handleClick = async e => {
+  handleShortenClick = async e => {
     e.preventDefault();
 
+    // clear the timeout of the timed message and hide it
     clearTimeout(this.errTimeout);
-    this.errTimeout = setTimeout(this.hideMessage, 3000);
+    this.hideMessage();
 
     // 1. Input validation
-    if (!this.validURL(this.state.input)) {
-      this.setState({
-        message: "Unable to shorten that link. It is not a valid url."
-      });
-    } else {
+    if (this.state.input === "") {
+      this.timedMessage("Please fill out the field.");
+    } else if (validator.isURL(this.state.input)) {
+      // if valid url or ipv4 address
       // 2. Hash and new link creation
       let url = this.state.input;
-      // adding "http://" at the beginning of urls which doesn't have it and are are not ftps
+      // we add "http://" at the beginning of urls which doesn't have it and are are not ftps in order to have the same look and feel format for all urls in database
       if (url.indexOf("http") !== 0 && url.indexOf("ftp") !== 0) {
         url = "http://" + url;
       }
@@ -69,7 +61,6 @@ class Main extends React.Component {
         hash,
         visits: 0
       };
-
       // 3. Axios request to store datas
       try {
         const response = await axios.post(`${server}add`, {
@@ -77,40 +68,46 @@ class Main extends React.Component {
           hash: newLink.hash,
           visits: newLink.visits
         });
-        newLink._id = response.data.id;
-        // 4. Update of links state
-        let links = [...this.state.links];
-        links.unshift(newLink);
-        this.setState({ input: "", links });
-      } catch (e) {
-        // if the server answer
-        if (e.response) {
-          this.setState({ message: e.response.data.message });
-          //console.log({ error: e.response.data.message });
+        if (response.data.id) {
+          // creation OK
+          newLink._id = response.data.id;
+          // 4. Update of links state
+          let links = [...this.state.links];
+          links.unshift(newLink);
+          this.setState({ input: "", links });
         } else {
-          this.setState({ message: e.message });
-          //console.log({ error: e.message.message });
+          // creation NOK, display error message
+          this.timedMessage(response.data.message);
         }
+      } catch (e) {
+        this.setState({ message: e.message });
       }
+    } else {
+      // else : the input is not a valid url or ipv4 address, so we show a timed message
+      this.timedMessage("Unable to shorten that link. It is not a valid url.");
     }
   };
 
-  shorturlClick = async linkId => {
+  // handle the click on a short url link
+  handleShorturlClick = async linkId => {
     try {
+      // update the visits count in database
       const response = await axios.post(`${server}update`, { id: linkId });
-
-      // update the visits count for this short link in the state
-      const visits = response.data.link.visits;
-      const links = [...this.state.links];
-      links.forEach(link => {
-        if (link._id === linkId) {
-          link.visits = visits;
-        }
-      });
-      this.setState({ links });
+      if (response.data.link) {
+        // update the visits count for this short link in the state
+        const visits = response.data.link.visits;
+        const links = [...this.state.links];
+        links.forEach(link => {
+          if (link._id === linkId) {
+            link.visits = visits;
+          }
+        });
+        this.setState({ links });
+      } else {
+        alert("This short url doesn't exist anymore in database ...");
+      }
     } catch (e) {
       this.setState({ message: e.message });
-      //console.log({ error: e.message });
     }
   };
 
@@ -127,7 +124,7 @@ class Main extends React.Component {
           <Link
             to={link.hash}
             target="_blank"
-            onClick={() => this.shorturlClick(link._id)}
+            onClick={() => this.handleShorturlClick(link._id)}
             // rel="noopener noreferrer"
           >
             {"https://short-url-sylvain-laborderie.herokuapp.com/" + link.hash}
@@ -151,7 +148,7 @@ class Main extends React.Component {
                   value={this.state.input}
                   placeholder="Your original URL here"
                 />
-                <button type="submit" onClick={this.handleClick}>
+                <button type="submit" onClick={this.handleShortenClick}>
                   Shorten URL
                 </button>
               </form>

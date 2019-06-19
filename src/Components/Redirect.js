@@ -4,10 +4,10 @@ import server from "../config/server";
 
 class Redirect extends React.Component {
   render() {
-    // NOTHING ON SCREEN WHILE
+    // Nothing is shown on screen while the redirection
     return null;
 
-    // OR SOME MESSAGE
+    // Or would you prefer a message or something ... ?
     //return <div>Redirecting ...</div>;
   }
 
@@ -16,18 +16,29 @@ class Redirect extends React.Component {
       const hash = this.props.location.pathname.substr(1);
       const response = await axios.get(`${server}link/?hash=${hash}`);
       if (response.data !== null) {
-        // url redirection
-        // add "http://" to urls whithout it but not on ftps urls ( in order for the redirection to work properly )
-        let url = response.data.original;
-        if (url.indexOf("http") !== 0 && url.indexOf("ftp") !== 0) {
-          url = "http://" + url;
+        const _id = response.data._id;
+        const url = response.data.original;
+
+        try {
+          // update the visits count in database
+          const response = await axios.post(`${server}update`, { id: _id });
+          if (response.data.link) {
+            // add "http://" to urls whithout it but not on ftps urls ( in order for the redirection to work properly )
+            // this case should never happen as we have already added it before storing in database, so it's just in case of something went wrong with the datas stored
+            if (url.indexOf("http") !== 0 && url.indexOf("ftp") !== 0) {
+              url = "http://" + url;
+            }
+            // url redirection
+            window.location.replace(url);
+          } else {
+            alert("This short url doesn't exist anymore in database ...");
+          }
+        } catch (e) {
+          this.setState({ message: e.message });
         }
-        //window.location.href = url;
-        window.location.replace(url);
-        //alert("redirecting to " + url);
-      } //else {
-      //alert("URL not valid");
-      //}
+      } else {
+        alert("This url doesn't exist in our database");
+      }
     } catch (e) {
       alert("error:" + e.message);
       console.log({ error: e.message });
