@@ -9,11 +9,6 @@ class App extends React.Component {
       <Router>
         <Route path="/:id" exact={true} component={Redirect} />
         <Route path="/" exact={true} component={Main} />
-        {/* <IndexRoute component={Home} />
-          <Route path="users" component={UserList}>
-            <Route path=":id" component={User} />
-          </Route>
-        </Route> */}
       </Router>
     );
   }
