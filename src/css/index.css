@@ -67,7 +67,7 @@ button {
   height: 40px;
   width: 22%;
   font-size: 16px;
-  background-color: rgb(236, 236, 236);
+  background-color: white;
   color: var(--shorturl-blue);
   text-transform: uppercase;
   border: none;
@@ -89,8 +89,9 @@ button:focus {
 
 table {
   width: 100%;
-  color: gray;
+  color: rgb(170, 170, 170);
   font-size: 14px;
+  font-weight: bold;
 }
 th,
 tr {
@@ -98,12 +99,12 @@ tr {
   line-height: 55px;
 }
 th {
-  background-color: rgb(236, 236, 236);
+  background-color: rgb(245, 245, 245);
+  border-bottom: 2px solid rgb(245, 245, 245);
   line-height: 40px;
-  font-weight: bold;
 }
 tr {
-  border-bottom: 2px solid rgb(236, 236, 236);
+  border-bottom: 2px solid rgb(207, 207, 207);
 }
 th,
 td {
@@ -119,6 +120,6 @@ a {
   color: rgb(125, 177, 210);
 }
 
-a:visited {
+/* a:visited {
   color: var(--shorturl-blue);
-}
+} */
