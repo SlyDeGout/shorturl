@@ -52,14 +52,12 @@ input {
 
 .error {
   background-color: rgb(255, 60, 125);
-  /* background-color: rgb(255, 9, 91); */
   text-align: center;
   border-radius: 5px;
   font-size: 20px;
   padding: 10px 40px;
   box-sizing: border-box;
   color: rgb(138, 38, 38);
-  /* color: white; */
   margin-bottom: 20px;
 }
 
@@ -119,7 +117,3 @@ td {
 a {
   color: rgb(125, 177, 210);
 }
-
-/* a:visited {
-  color: var(--shorturl-blue);
-} */
